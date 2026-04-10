@@ -1565,18 +1565,10 @@ button { cursor: pointer; border: none; outline: none; font-family: var(--font);
         <span class="welcome-tag">🎓 学术直播</span>
         <span class="welcome-tag">⭐ 专家互动</span>
       </div>
-      <div class="welcome-stats">
+      <div class="welcome-stats" style="justify-content:center;">
         <div class="stat-item">
           <div class="stat-num" id="welcome-visitors">3,721</div>
           <div class="stat-label">医生已入园</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-num">8</div>
-          <div class="stat-label">功能区域</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-num">5</div>
-          <div class="stat-label">专家入驻</div>
         </div>
       </div>
       <button class="btn-enter" onclick="enterPark()">
@@ -1779,41 +1771,31 @@ button { cursor: pointer; border: none; outline: none; font-family: var(--font);
     </div>
 
     <div class="section-pad">
-      <div class="section-title">📼 往期精彩回放</div>
+      <div class="section-title">📼 年鉴内容精选</div>
 
       <div class="video-card" onclick="playVideo(this)">
-        <div class="video-thumb">
-          <div class="video-thumb-emoji">🧬</div>
+        <div class="video-thumb" style="background:linear-gradient(135deg,#0d47a1,#1565c0);">
+          <div class="video-thumb-emoji">💡</div>
           <div class="play-btn"><div class="play-icon">▶</div></div>
         </div>
         <div class="video-info">
-          <div class="video-title">CTMP皮肤护理模式：从理论到临床实践</div>
-          <div class="video-meta">2026-03-20 · 38分钟 · 6,234次观看</div>
-          <div class="video-tag">皮肤屏障修护</div>
+          <div class="video-title">年鉴内容精选 · Part 1</div>
+          <div class="video-meta" style="font-size:12px;font-weight:600;color:#1565c0;margin-bottom:4px;">光电项目主题</div>
+          <div class="video-meta">光电术后皮肤屏障修护 · 临床实证精粹</div>
+          <div class="video-tag">光电修护</div>
         </div>
       </div>
 
       <div class="video-card" onclick="playVideo(this)">
-        <div class="video-thumb" style="background:linear-gradient(135deg,#1b5e20,#2e7d32);">
-          <div class="video-thumb-emoji">🌿</div>
+        <div class="video-thumb" style="background:linear-gradient(135deg,#880e4f,#ad1457);">
+          <div class="video-thumb-emoji">🌸</div>
           <div class="play-btn"><div class="play-icon">▶</div></div>
         </div>
         <div class="video-info">
-          <div class="video-title">特应性皮炎缓解期：保湿剂的科学选择</div>
-          <div class="video-meta">2026-02-15 · 25分钟 · 4,891次观看</div>
-          <div class="video-tag">特应性皮炎</div>
-        </div>
-      </div>
-
-      <div class="video-card" onclick="playVideo(this)">
-        <div class="video-thumb" style="background:linear-gradient(135deg,#880e4f,#c2185b);">
-          <div class="video-thumb-emoji">🌹</div>
-          <div class="play-btn"><div class="play-icon">▶</div></div>
-        </div>
-        <div class="video-info">
-          <div class="video-title">玫瑰痤疮全周期管理方案精要</div>
-          <div class="video-meta">2026-01-10 · 42分钟 · 3,567次观看</div>
-          <div class="video-tag">玫瑰痤疮</div>
+          <div class="video-title">年鉴内容精选 · Part 2</div>
+          <div class="video-meta" style="font-size:12px;font-weight:600;color:#ad1457;margin-bottom:4px;">敏感肌主题</div>
+          <div class="video-meta">敏感肌全周期管理 · 科学护肤方案解析</div>
+          <div class="video-tag">敏感肌</div>
         </div>
       </div>
     </div>
@@ -2549,9 +2531,8 @@ function spawnParticles(el) {
 
 // ===================== VIDEO =====================
 const videoData = [
-  { title: 'CTMP皮肤护理模式：从理论到临床实践', emoji: '🧬', desc: '系统讲解丝塔芙倡导的CTMP（Cutaneous Treatment Management Protocol）皮肤护理管理模式，从皮肤屏障理论基础到临床应用路径，包含真实病例分析与产品推荐逻辑。', duration: '38:00' },
-  { title: '特应性皮炎缓解期：保湿剂的科学选择', emoji: '🌿', desc: '聚焦特应性皮炎缓解期管理中保湿剂的循证选择标准，结合Cetaphil舒特肤临床RCT研究数据，为皮肤科医生提供实操性推荐框架。', duration: '25:00' },
-  { title: '玫瑰痤疮全周期管理方案精要', emoji: '🌹', desc: '梳理玫瑰痤疮从诊断分期到长期管理的全周期方案，重点介绍温和护肤在降低疾病诱发因素中的关键作用与产品选择依据。', duration: '42:00' }
+  { title: '年鉴内容精选 · Part 1 光电项目主题', emoji: '💡', desc: '聚焦光电项目术后皮肤屏障修护核心策略，涵盖激光、强脉冲光等主流光电治疗后的科学护肤方案，结合Cetaphil舒特肤临床数据，为皮肤科医生提供实操性推荐依据。', duration: '30:00' },
+  { title: '年鉴内容精选 · Part 2 敏感肌主题', emoji: '🌸', desc: '系统梳理敏感肌的诊断标准与全周期管理方案，从诱因分析、屏障修护到长期维稳，结合真实病例与临床数据，为皮肤科医生构建科学的敏感肌护肤推荐体系。', duration: '30:00' }
 ];
 let currentVideoIdx = 0;
 let videoInterval;
