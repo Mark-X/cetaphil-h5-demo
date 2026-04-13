@@ -183,6 +183,288 @@ button { cursor: pointer; border: none; outline: none; font-family: var(--font);
   color: rgba(255,255,255,0.5);
 }
 
+/* ===================== SPACE ZOOM TRANSITION (Google Earth Style) ===================== */
+.space-zoom-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  overflow: hidden;
+}
+.space-zoom-overlay.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: all;
+}
+.space-universe {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, #0d1b2a 0%, #1b263b 40%, #000000 100%);
+}
+.space-stars {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(1.5px 1.5px at 50px 80px, rgba(255,255,255,0.9), transparent),
+    radial-gradient(1px 1px at 120px 40px, rgba(255,255,255,0.7), transparent),
+    radial-gradient(2px 2px at 200px 150px, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 300px 60px, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1.5px 1.5px at 400px 200px, rgba(255,255,255,0.9), transparent),
+    radial-gradient(1px 1px at 80px 250px, rgba(255,255,255,0.7), transparent),
+    radial-gradient(2px 2px at 350px 100px, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 180px 300px, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1.5px 1.5px at 450px 280px, rgba(255,255,255,0.9), transparent),
+    radial-gradient(1px 1px at 250px 180px, rgba(255,255,255,0.7), transparent);
+  background-size: 500px 350px;
+  animation: twinkle 4s infinite ease-in-out;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* 地球层 - Google Earth风格 */
+.space-earth-container {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.space-earth {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: 
+    radial-gradient(circle at 25% 25%, rgba(255,255,255,0.4) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(0,0,0,0.3) 0%, transparent 40%),
+    linear-gradient(135deg, #1565c0 0%, #0277bd 20%, #4caf50 35%, #66bb6a 50%, #81c784 65%, #0288d1 85%, #01579b 100%);
+  box-shadow: 
+    0 0 80px rgba(2,136,209,0.4),
+    inset -20px -20px 40px rgba(0,0,0,0.5),
+    inset 10px 10px 30px rgba(255,255,255,0.2);
+  animation: earthRotate 20s linear infinite;
+  overflow: hidden;
+}
+@keyframes earthRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+/* 大陆轮廓 */
+.space-earth::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: 
+    /* 亚洲大陆 */
+    radial-gradient(ellipse 30px 25px at 70% 35%, rgba(76,175,80,0.9) 0%, transparent 70%),
+    radial-gradient(ellipse 20px 15px at 75% 45%, rgba(76,175,80,0.8) 0%, transparent 60%),
+    /* 欧洲 */
+    radial-gradient(ellipse 15px 12px at 55% 30%, rgba(76,175,80,0.8) 0%, transparent 60%),
+    /* 非洲 */
+    radial-gradient(ellipse 18px 28px at 52% 55%, rgba(76,175,80,0.85) 0%, transparent 65%),
+    /* 澳洲 */
+    radial-gradient(ellipse 15px 10px at 85% 70%, rgba(76,175,80,0.8) 0%, transparent 60%),
+    /* 云层 */
+    radial-gradient(ellipse 40px 20px at 60% 25%, rgba(255,255,255,0.3) 0%, transparent 60%),
+    radial-gradient(ellipse 30px 15px at 40% 60%, rgba(255,255,255,0.25) 0%, transparent 55%);
+  animation: earthRotate 20s linear infinite reverse;
+}
+/* 大气层光晕 */
+.space-earth::after {
+  content: '';
+  position: absolute;
+  inset: -15%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(2,136,209,0.15) 0%, transparent 60%);
+  animation: atmospherePulse 3s infinite ease-in-out;
+}
+@keyframes atmospherePulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.05); opacity: 0.9; }
+}
+/* 云层覆盖层 */
+.space-clouds {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: 
+    radial-gradient(ellipse 50px 25px at 30% 40%, rgba(255,255,255,0.4) 0%, transparent 50%),
+    radial-gradient(ellipse 40px 20px at 70% 60%, rgba(255,255,255,0.35) 0%, transparent 45%),
+    radial-gradient(ellipse 35px 18px at 50% 30%, rgba(255,255,255,0.3) 0%, transparent 40%);
+  animation: cloudDrift 15s linear infinite;
+  mix-blend-mode: screen;
+}
+@keyframes cloudDrift {
+  from { transform: translateX(-10px); }
+  to { transform: translateX(10px); }
+}
+
+/* 阶段1: 地球放大并带3D倾斜效果 */
+.space-zoom-overlay.phase-city .space-earth-container {
+  transform: translate(-50%, -50%) scale(6) rotateX(25deg);
+  opacity: 0;
+}
+
+/* 城市/卫星图层 - Google Earth高空视角 */
+.space-satellite {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(0.5);
+  opacity: 0;
+  transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  background: 
+    /* 卫星地图风格的陆地 */
+    radial-gradient(ellipse 300px 200px at 30% 40%, rgba(76,175,80,0.6) 0%, transparent 50%),
+    radial-gradient(ellipse 200px 150px at 70% 60%, rgba(139,195,74,0.5) 0%, transparent 45%),
+    radial-gradient(ellipse 250px 180px at 50% 30%, rgba(102,187,106,0.55) 0%, transparent 48%),
+    /* 水域 */
+    radial-gradient(ellipse 400px 300px at 80% 20%, rgba(2,136,209,0.3) 0%, transparent 40%),
+    /* 城市灯光区域 */
+    radial-gradient(ellipse 80px 60px at 45% 55%, rgba(255,193,7,0.4) 0%, transparent 50%),
+    radial-gradient(ellipse 60px 50px at 55% 48%, rgba(255,213,79,0.35) 0%, transparent 45%),
+    radial-gradient(ellipse 40px 30px at 48% 52%, rgba(255,236,179,0.5) 0%, transparent 40%),
+    /* 基础色调 */
+    linear-gradient(180deg, #4fc3f7 0%, #29b6f6 30%, #81c784 60%, #66bb6a 100%);
+  filter: contrast(1.1) saturate(1.2);
+}
+/* 道路网格 */
+.space-satellite-roads {
+  position: absolute;
+  inset: 0;
+  background: 
+    /* 主要道路 */
+    linear-gradient(90deg, transparent 48%, rgba(255,255,255,0.3) 49%, rgba(255,255,255,0.3) 51%, transparent 52%),
+    linear-gradient(0deg, transparent 48%, rgba(255,255,255,0.25) 49%, rgba(255,255,255,0.25) 51%, transparent 52%),
+    /* 次要道路 */
+    linear-gradient(45deg, transparent 48%, rgba(255,255,255,0.15) 49%, rgba(255,255,255,0.15) 51%, transparent 52%),
+    linear-gradient(-45deg, transparent 48%, rgba(255,255,255,0.15) 49%, rgba(255,255,255,0.15) 51%, transparent 52%);
+  background-size: 100px 100px, 100px 100px, 70px 70px, 70px 70px;
+  opacity: 0.6;
+}
+/* 城市标记 */
+.space-city-marker {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+}
+.space-city-marker::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245,200,66,0.8) 0%, transparent 70%);
+  animation: markerPulse 1.5s infinite ease-in-out;
+}
+.space-city-marker::after {
+  content: '📍';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 20px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+@keyframes markerPulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 0.4; }
+}
+.space-satellite-label {
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  letter-spacing: 1px;
+  background: rgba(0,0,0,0.4);
+  padding: 4px 12px;
+  border-radius: 12px;
+  backdrop-filter: blur(4px);
+}
+
+/* 阶段2: 卫星视角显现 */
+.space-zoom-overlay.phase-city .space-satellite {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+/* 阶段3: 卫星视角放大进入乐园 */
+.space-zoom-overlay.phase-park .space-satellite {
+  transform: translate(-50%, -50%) scale(3);
+  opacity: 0;
+}
+
+/* 乐园层 */
+.space-park-preview {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(0.3);
+  opacity: 0;
+  transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(180deg, #e0f7fa 0%, #f0fafc 60%, #fdf8f3 100%);
+}
+.space-zoom-overlay.phase-park .space-park-preview {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+  border-radius: 0;
+}
+.space-park-content {
+  width: 100%;
+  height: 100%;
+  transform: scale(3);
+  transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  color: var(--primary);
+}
+.space-zoom-overlay.phase-park .space-park-content {
+  transform: scale(1);
+}
+.space-hint {
+  position: absolute;
+  bottom: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255,255,255,0.95);
+  font-size: 13px;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.5s;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.3);
+  padding: 8px 16px;
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+}
+.space-zoom-overlay.active .space-hint {
+  opacity: 1;
+}
+.space-zoom-overlay.phase-park .space-hint {
+  opacity: 0;
+}
+
 /* ===================== TOP NAV ===================== */
 .top-nav {
   position: sticky; top: 0; z-index: 100;
@@ -1545,6 +1827,38 @@ button { cursor: pointer; border: none; outline: none; font-family: var(--font);
 <body>
 <div id="app">
 
+  <!-- ===== SPACE ZOOM OVERLAY (Google Earth Style) ===== -->
+  <div class="space-zoom-overlay" id="space-zoom">
+    <div class="space-universe">
+      <div class="space-stars"></div>
+      
+      <!-- 地球层 -->
+      <div class="space-earth-container">
+        <div class="space-earth">
+          <div class="space-clouds"></div>
+        </div>
+      </div>
+      
+      <!-- 卫星地图层 (高空视角) -->
+      <div class="space-satellite">
+        <div class="space-satellite-roads"></div>
+        <div class="space-city-marker"></div>
+        <div class="space-satellite-label">痕愈乐园</div>
+      </div>
+      
+      <!-- 乐园层 -->
+      <div class="space-park-preview">
+        <div class="space-park-content">
+          <div style="text-align:center;">
+            <div style="font-size:24px;margin-bottom:8px;">🌿</div>
+            <div style="font-size:12px;font-weight:700;">痕愈乐园</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="space-hint">正在进入乐园...</div>
+  </div>
+
   <!-- ===== WELCOME SCREEN ===== -->
   <div class="screen active" id="screen-welcome">
     <div class="welcome-bg">
@@ -1571,7 +1885,7 @@ button { cursor: pointer; border: none; outline: none; font-family: var(--font);
           <div class="stat-label">医生已入园</div>
         </div>
       </div>
-      <button class="btn-enter" onclick="enterPark()">
+      <button class="btn-enter" onclick="enterParkWithZoom()">
         🎪 进入乐园
       </button>
       <div class="welcome-footer">丝塔芙 × 丁香园 学术推广合作 · 2026</div>
@@ -1673,13 +1987,16 @@ button { cursor: pointer; border: none; outline: none; font-family: var(--font);
             <div class="map-landmark-label">小礼堂<br><span style="font-size:9px;color:#888;font-weight:400;">学术直播</span></div>
           </div>
 
-          <!-- 2. 中心广场 - 正中央 -->
+          <!-- 2. 年鉴广场（喷水池）- 正中央 -->
           <div class="map-landmark landmark-center" style="left:50%;top:50%;transform:translate(-50%,-50%);"
-               onclick="showPopup('popup-plaza')">
-            <div class="map-landmark-body" style="width:72px;height:72px;background:linear-gradient(145deg,#2e7d32,#4caf50,#81c784);">
-              <div class="map-landmark-icon">⛲</div>
+               onclick="showScreen('screen-plaza')">
+            <div class="map-landmark-body" style="width:72px;height:72px;background:linear-gradient(145deg,#0288d1,#039be5,#29b6f6);border-radius:50%;">
+              <div class="fountain-ripple" style="position:absolute;inset:-8px;border-radius:50%;border:2px solid rgba(2,136,209,0.5);animation:ripple 2s infinite;"></div>
+              <div class="fountain-ripple" style="position:absolute;inset:-16px;border-radius:50%;border:2px solid rgba(2,136,209,0.4);animation:ripple 2s infinite 0.7s;"></div>
+              <div class="fountain-ripple" style="position:absolute;inset:-24px;border-radius:50%;border:2px solid rgba(2,136,209,0.3);animation:ripple 2s infinite 1.4s;"></div>
+              <div class="map-landmark-icon" style="font-size:28px;z-index:2;">⛲</div>
             </div>
-            <div class="map-landmark-label" style="background:rgba(255,255,255,0.95);">中心广场<br><span style="font-size:9px;color:#2e7d32;font-weight:600;">打卡 +5分</span></div>
+            <div class="map-landmark-label" style="background:rgba(255,255,255,0.95);">年鉴广场<br><span style="font-size:9px;color:#0288d1;font-weight:600;">查看年鉴</span></div>
           </div>
 
           <!-- 3. 雕塑馆 - 左上区 -->
@@ -1749,7 +2066,7 @@ button { cursor: pointer; border: none; outline: none; font-family: var(--font);
     </div>
   </div>
 
-  <!-- ===== LECTURE HALL SCREEN ===== -->
+  <!-- ===== LECTURE HALL SCREEN (小礼堂 - 发布会预热&直播) ===== -->
   <div class="screen" id="screen-hall">
     <div class="top-nav">
       <div class="nav-back" onclick="goBack()">←</div>
@@ -1767,6 +2084,110 @@ button { cursor: pointer; border: none; outline: none; font-family: var(--font);
       <div class="hall-cta">
         <button class="btn-primary" onclick="reserveLive()">🔔 预约提醒 +5分</button>
         <button class="btn-outline" onclick="showToast('直播回放即将上线')">▶ 往期回放</button>
+      </div>
+    </div>
+
+    <div class="section-pad">
+      <div class="section-title">🔥 发布会预热</div>
+      
+      <div class="video-card" onclick="showToast('预热视频即将上线')">
+        <div class="video-thumb" style="background:linear-gradient(135deg,#e65100,#f57c00);">
+          <div class="video-thumb-emoji">🎬</div>
+          <div class="play-btn"><div class="play-icon">▶</div></div>
+        </div>
+        <div class="video-info">
+          <div class="video-title">发布会预告片</div>
+          <div class="video-meta">2026 CSD 年鉴发布 · 精彩抢先看</div>
+          <div class="video-tag" style="background:#fff3e0;color:#e65100;">预告</div>
+        </div>
+      </div>
+
+      <div class="video-card" onclick="showToast('专家访谈即将上线')">
+        <div class="video-thumb" style="background:linear-gradient(135deg,#6a1b9a,#ab47bc);">
+          <div class="video-thumb-emoji">🎙️</div>
+          <div class="play-btn"><div class="play-icon">▶</div></div>
+        </div>
+        <div class="video-info">
+          <div class="video-title">专家访谈：年鉴背后的故事</div>
+          <div class="video-meta">主编团队揭秘年鉴编写历程</div>
+          <div class="video-tag" style="background:#f3e5f5;color:#6a1b9a;">访谈</div>
+        </div>
+      </div>
+
+      <div class="video-card" onclick="showToast('直播入口将在活动当天开放')">
+        <div class="video-thumb" style="background:linear-gradient(135deg,#c62828,#ef5350);">
+          <div class="video-thumb-emoji">📡</div>
+          <div class="play-btn" style="animation:pulse-badge 1.5s infinite;"><div class="play-icon" style="background:#c62828;color:white;">●</div></div>
+        </div>
+        <div class="video-info">
+          <div class="video-title">🔴 发布会直播入口</div>
+          <div class="video-meta">6月1日 14:00 准时开播</div>
+          <div class="video-tag" style="background:#ffebee;color:#c62828;">LIVE</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-pad" style="padding-top:0;">
+      <div class="section-title">📋 发布会日程</div>
+      <div style="background:white;border-radius:12px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+        <div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #f5f5f5;">
+          <div style="color:var(--primary);font-weight:700;font-size:13px;white-space:nowrap;">14:00</div>
+          <div style="font-size:13px;color:var(--text);">开幕致辞 · 丝塔芙品牌代表</div>
+        </div>
+        <div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #f5f5f5;">
+          <div style="color:var(--primary);font-weight:700;font-size:13px;white-space:nowrap;">14:20</div>
+          <div style="font-size:13px;color:var(--text);">年鉴核心内容解读 · 主编团队</div>
+        </div>
+        <div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #f5f5f5;">
+          <div style="color:var(--primary);font-weight:700;font-size:13px;white-space:nowrap;">15:00</div>
+          <div style="font-size:13px;color:var(--text);">临床案例分享 · 特邀专家</div>
+        </div>
+        <div style="display:flex;gap:12px;padding:10px 0;">
+          <div style="color:var(--primary);font-weight:700;font-size:13px;white-space:nowrap;">15:40</div>
+          <div style="font-size:13px;color:var(--text);">互动问答 & 闭幕</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PLAZA SCREEN (年鉴广场 - 年鉴详情页) ===== -->
+  <div class="screen" id="screen-plaza">
+    <div class="top-nav">
+      <div class="nav-back" onclick="goBack()">←</div>
+      <div class="nav-title">⛲ 年鉴广场</div>
+      <div class="nav-score" onclick="showScreen('screen-profile')">🏅 <span id="plaza-score">85</span></div>
+    </div>
+    <div class="plaza-hero" style="background:linear-gradient(135deg, #01579b, #0288d1, #29b6f6);">
+      <div class="plaza-title">《丝塔芙临床实证年鉴》2026</div>
+      <div class="plaza-subtitle">科学护肤 · 临床实证 · 权威发布</div>
+      <div class="fountain-container">
+        <div class="fountain-base" id="fountain" onclick="doCheckin(this)" style="background:radial-gradient(circle at 40% 35%, #4fc3f7, #0288d1 60%, #01579b);box-shadow:0 0 40px rgba(2,136,209,0.6), inset 0 0 30px rgba(255,255,255,0.2);">
+          <div class="fountain-ripple"></div>
+          <div class="fountain-ripple"></div>
+          <div class="fountain-ripple"></div>
+          <div class="fountain-center">📖</div>
+        </div>
+      </div>
+      <div class="checkin-count">点击喷水池打卡，今日已有 <span id="checkin-count">847</span> 次打卡</div>
+    </div>
+
+    <div class="plaza-info">
+      <div class="almanac-title">📖 《实证年鉴》核心摘要</div>
+      <div class="almanac-item">
+        <div class="almanac-num">1</div>
+        <div class="almanac-text"><strong>皮肤屏障修护</strong>是特应性皮炎、玫瑰痤疮等10+皮肤疾病管理的核心策略，CTMP模式提供系统化解决方案</div>
+      </div>
+      <div class="almanac-item">
+        <div class="almanac-num">2</div>
+        <div class="almanac-text"><strong>Cetaphil舒特肤</strong>临床验证：连续使用8周，皮肤屏障功能改善率达87.3%（n=312，RCT研究）</div>
+      </div>
+      <div class="almanac-item">
+        <div class="almanac-num">3</div>
+        <div class="almanac-text"><strong>功效性护肤品</strong>在长期皮肤管理中的角色：维持缓解期、减少复发频率、改善患者生活质量</div>
+      </div>
+      <div class="almanac-item">
+        <div class="almanac-num">4</div>
+        <div class="almanac-text"><strong>医生推荐率</strong>：完成年鉴学习的医生，对丝塔芙主动推荐意愿提升 <strong>+34%</strong></div>
       </div>
     </div>
 
@@ -1797,48 +2218,6 @@ button { cursor: pointer; border: none; outline: none; font-family: var(--font);
           <div class="video-meta">敏感肌全周期管理 · 科学护肤方案解析</div>
           <div class="video-tag">敏感肌</div>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== PLAZA SCREEN ===== -->
-  <div class="screen" id="screen-plaza">
-    <div class="top-nav">
-      <div class="nav-back" onclick="goBack()">←</div>
-      <div class="nav-title">⛲ 中心广场</div>
-      <div class="nav-score" onclick="showScreen('screen-profile')">🏅 <span id="plaza-score">85</span></div>
-    </div>
-    <div class="plaza-hero">
-      <div class="plaza-title">皮肤年鉴喷水池</div>
-      <div class="plaza-subtitle">点击喷水池打卡，获得积分与徽章</div>
-      <div class="fountain-container">
-        <div class="fountain-base" id="fountain" onclick="doCheckin(this)">
-          <div class="fountain-ripple"></div>
-          <div class="fountain-ripple"></div>
-          <div class="fountain-ripple"></div>
-          <div class="fountain-center">💧</div>
-        </div>
-      </div>
-      <div class="checkin-count">今日已有 <span id="checkin-count">847</span> 次打卡</div>
-    </div>
-
-    <div class="plaza-info">
-      <div class="almanac-title">📖 《实证年鉴》核心摘要</div>
-      <div class="almanac-item">
-        <div class="almanac-num">1</div>
-        <div class="almanac-text"><strong>皮肤屏障修护</strong>是特应性皮炎、玫瑰痤疮等10+皮肤疾病管理的核心策略，CTMP模式提供系统化解决方案</div>
-      </div>
-      <div class="almanac-item">
-        <div class="almanac-num">2</div>
-        <div class="almanac-text"><strong>Cetaphil舒特肤</strong>临床验证：连续使用8周，皮肤屏障功能改善率达87.3%（n=312，RCT研究）</div>
-      </div>
-      <div class="almanac-item">
-        <div class="almanac-num">3</div>
-        <div class="almanac-text"><strong>功效性护肤品</strong>在长期皮肤管理中的角色：维持缓解期、减少复发频率、改善患者生活质量</div>
-      </div>
-      <div class="almanac-item">
-        <div class="almanac-num">4</div>
-        <div class="almanac-text"><strong>医生推荐率</strong>：完成年鉴学习的医生，对丝塔芙主动推荐意愿提升 <strong>+34%</strong></div>
       </div>
     </div>
 
@@ -2229,19 +2608,19 @@ button { cursor: pointer; border: none; outline: none; font-family: var(--font);
     <div class="burst-text">打卡成功 +5分！</div>
   </div>
 
-  <!-- ===== CENTER PLAZA POPUP (中心广场大弹窗) ===== -->
+  <!-- ===== ALMANAC PLAZA POPUP (年鉴广场大弹窗) ===== -->
   <div class="landmark-popup-overlay" id="popup-plaza" onclick="closePopup('popup-plaza')">
     <div class="landmark-popup" onclick="event.stopPropagation()">
-      <div class="popup-hero" style="background:linear-gradient(135deg, #2e7d32, #43a047, #66bb6a);">
+      <div class="popup-hero" style="background:linear-gradient(135deg, #01579b, #0288d1, #29b6f6);">
         <button class="popup-close" onclick="closePopup('popup-plaza')">✕</button>
         <div class="popup-icon-wrap">⛲</div>
-        <div class="popup-title">中心广场</div>
-        <div class="popup-subtitle">皮肤年鉴喷水池 · 每日打卡得积分</div>
+        <div class="popup-title">年鉴广场</div>
+        <div class="popup-subtitle">皮肤年鉴喷水池 · 查看年鉴内容精选</div>
       </div>
       <div class="popup-body">
         <div class="popup-stats">
           <div class="popup-stat">
-            <div class="popup-stat-num" style="color:#2e7d32;" id="popup-plaza-checkins">847</div>
+            <div class="popup-stat-num" style="color:#0288d1;" id="popup-plaza-checkins">847</div>
             <div class="popup-stat-label">今日打卡</div>
           </div>
           <div class="popup-stat">
@@ -2249,27 +2628,27 @@ button { cursor: pointer; border: none; outline: none; font-family: var(--font);
             <div class="popup-stat-label">打卡积分</div>
           </div>
           <div class="popup-stat">
-            <div class="popup-stat-num" style="color:#1565c0;">4</div>
-            <div class="popup-stat-label">核心摘要</div>
+            <div class="popup-stat-num" style="color:#1565c0;">2</div>
+            <div class="popup-stat-label">精选内容</div>
           </div>
         </div>
         <div class="popup-info-row">
-          <div class="popup-info-icon" style="background:#e8f5e9;">📖</div>
+          <div class="popup-info-icon" style="background:#e3f2fd;">📖</div>
           <div class="popup-info-text">
             <strong>《实证年鉴》核心摘要</strong>
             <span>CTMP皮肤屏障修护、临床验证数据、功效性护肤品研究</span>
           </div>
         </div>
         <div class="popup-info-row">
-          <div class="popup-info-icon" style="background:#fff3e0;">🔔</div>
+          <div class="popup-info-icon" style="background:#fff3e0;">💡</div>
           <div class="popup-info-text">
-            <strong>每日打卡提醒</strong>
-            <span>每天一次，每次 +5 积分</span>
+            <strong>年鉴内容精选</strong>
+            <span>Part 1 光电项目主题 · Part 2 敏感肌主题</span>
           </div>
         </div>
       </div>
       <div class="popup-actions">
-        <button class="popup-btn popup-btn-primary" onclick="closePopup('popup-plaza');showScreen('screen-plaza')">⛲ 进入广场打卡</button>
+        <button class="popup-btn popup-btn-primary" onclick="closePopup('popup-plaza');showScreen('screen-plaza')">⛲ 进入年鉴广场</button>
         <button class="popup-btn popup-btn-secondary" onclick="closePopup('popup-plaza')">稍后再说</button>
       </div>
     </div>
@@ -2419,6 +2798,37 @@ function goBack() {
 }
 
 // ===================== WELCOME =====================
+// ===================== SPACE ZOOM TRANSITION (Google Earth Style) =====================
+function enterParkWithZoom() {
+  const zoomOverlay = document.getElementById('space-zoom');
+  
+  // 显示宇宙俯瞰层
+  zoomOverlay.classList.add('active');
+  
+  // 阶段1: 地球旋转放大，带3D倾斜 (0.3-1.8s)
+  setTimeout(() => {
+    zoomOverlay.classList.add('phase-city');
+  }, 300);
+  
+  // 阶段2: 卫星地图视角放大 (1.8-3.3s)
+  setTimeout(() => {
+    zoomOverlay.classList.add('phase-park');
+  }, 1800);
+  
+  // 动画结束后进入乐园
+  setTimeout(() => {
+    addScore(10);
+    showScreen('screen-home');
+    animateVisitorCount();
+    
+    // 隐藏宇宙层并重置状态
+    zoomOverlay.classList.remove('active', 'phase-city', 'phase-park');
+    
+    // 显示小黑板
+    setTimeout(() => showBlackboard(), 500);
+  }, 3200);
+}
+
 function enterPark() {
   addScore(10);
   showScreen('screen-home');
