@@ -1067,6 +1067,41 @@ button { cursor: pointer; border: none; outline: none; font-family: var(--font);
   margin-top: 6px;
 }
 
+/* Article Card (文章卡片样式) */
+.article-card {
+  background: white;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 12px;
+  display: flex;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.article-card:active { transform: scale(0.98); }
+.article-thumb {
+  width: 110px;
+  min-height: 72px;
+  background: linear-gradient(135deg, #1a1a2e, #0f3460);
+  position: relative;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.article-thumb-emoji { font-size: 28px; }
+.article-info { padding: 12px; flex: 1; }
+.article-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; line-height: 1.4; }
+.article-meta { font-size: 11px; color: var(--text-muted); }
+.article-tag {
+  display: inline-block;
+  background: #e3f2fd;
+  color: #1565c0;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
 /* ===================== PLAZA SCREEN ===================== */
 #screen-plaza {
   background: linear-gradient(180deg, #e8f5e9 0%, var(--cream) 100%);
@@ -1885,7 +1920,7 @@ button { cursor: pointer; border: none; outline: none; font-family: var(--font);
           <div class="stat-label">医生已入园</div>
         </div>
       </div>
-      <button class="btn-enter" onclick="enterParkWithZoom()">
+      <button class="btn-enter" onclick="enterPark()">
         🎪 进入乐园
       </button>
       <div class="welcome-footer">丝塔芙 × 丁香园 学术推广合作 · 2026</div>
@@ -2001,7 +2036,7 @@ button { cursor: pointer; border: none; outline: none; font-family: var(--font);
 
           <!-- 3. 雕塑馆 - 左上区 -->
           <div class="map-landmark" style="left:8%;top:12%;transform:none;"
-               onclick="showPopup('popup-gallery')">
+               onclick="showScreen('screen-gallery')">
             <div class="map-landmark-body" style="width:58px;height:58px;background:linear-gradient(145deg,#4a148c,#7b1fa2,#ab47bc);">
               <span class="map-landmark-badge gold-badge">NEW</span>
               <div class="map-landmark-icon">🗿</div>
@@ -2009,13 +2044,14 @@ button { cursor: pointer; border: none; outline: none; font-family: var(--font);
             <div class="map-landmark-label">雕塑馆<br><span style="font-size:9px;color:#888;font-weight:400;">专家专栏</span></div>
           </div>
 
-          <!-- 4. 乐园墙 - 右上区 -->
-          <div class="map-landmark" style="right:8%;top:12%;transform:none;"
-               onclick="showScreen('screen-wall')">
-            <div class="map-landmark-body" style="width:58px;height:58px;background:linear-gradient(145deg,#006064,#00838f,#26c6da);">
+          <!-- 4. 乐园墙 - 右上区（建设中） -->
+          <div class="map-landmark" style="right:8%;top:12%;transform:none;opacity:0.55;filter:grayscale(0.5);"
+               onclick="showToast('🚧 乐园墙区域建设中，敬请期待！')">
+            <div class="map-landmark-body" style="width:54px;height:54px;background:linear-gradient(145deg,#616161,#9e9e9e,#bdbdbd);">
+              <span class="map-landmark-badge lock-badge">建设中</span>
               <div class="map-landmark-icon">🏛️</div>
             </div>
-            <div class="map-landmark-label">乐园墙<br><span style="font-size:9px;color:#888;font-weight:400;">入园医生</span></div>
+            <div class="map-landmark-label">乐园墙<br><span style="font-size:9px;color:#aaa;font-weight:400;">即将上线</span></div>
           </div>
 
           <!-- 5. 个人游览卡 - 右下区 -->
@@ -2047,8 +2083,7 @@ button { cursor: pointer; border: none; outline: none; font-family: var(--font);
             <div class="map-landmark-label">QA地图<br><span style="font-size:9px;color:#aaa;font-weight:400;">即将上线</span></div>
           </div>
 
-          <!-- 指南针 -->
-          <div class="map-compass">🧭</div>
+          <!-- 指南针已移除 -->
 
           <!-- 图例 -->
           <div class="map-legend">
@@ -2192,31 +2227,29 @@ button { cursor: pointer; border: none; outline: none; font-family: var(--font);
     </div>
 
     <div class="section-pad">
-      <div class="section-title">📼 年鉴内容精选</div>
+      <div class="section-title">📚 年鉴内容精选</div>
 
-      <div class="video-card" onclick="playVideo(this)">
-        <div class="video-thumb" style="background:linear-gradient(135deg,#0d47a1,#1565c0);">
-          <div class="video-thumb-emoji">💡</div>
-          <div class="play-btn"><div class="play-icon">▶</div></div>
+      <div class="article-card" onclick="readArticle(this, 0)">
+        <div class="article-thumb" style="background:linear-gradient(135deg,#0d47a1,#1565c0);">
+          <div class="article-thumb-emoji">💡</div>
         </div>
-        <div class="video-info">
-          <div class="video-title">年鉴内容精选 · Part 1</div>
-          <div class="video-meta" style="font-size:12px;font-weight:600;color:#1565c0;margin-bottom:4px;">光电项目主题</div>
-          <div class="video-meta">光电术后皮肤屏障修护 · 临床实证精粹</div>
-          <div class="video-tag">光电修护</div>
+        <div class="article-info">
+          <div class="article-title">年鉴内容精选 · Part 1</div>
+          <div class="article-meta" style="font-size:12px;font-weight:600;color:#1565c0;margin-bottom:4px;">光电项目主题</div>
+          <div class="article-meta">光电术后皮肤屏障修护 · 临床实证精粹</div>
+          <div class="article-tag">光电修护</div>
         </div>
       </div>
 
-      <div class="video-card" onclick="playVideo(this)">
-        <div class="video-thumb" style="background:linear-gradient(135deg,#880e4f,#ad1457);">
-          <div class="video-thumb-emoji">🌸</div>
-          <div class="play-btn"><div class="play-icon">▶</div></div>
+      <div class="article-card" onclick="readArticle(this, 1)">
+        <div class="article-thumb" style="background:linear-gradient(135deg,#880e4f,#ad1457);">
+          <div class="article-thumb-emoji">🌸</div>
         </div>
-        <div class="video-info">
-          <div class="video-title">年鉴内容精选 · Part 2</div>
-          <div class="video-meta" style="font-size:12px;font-weight:600;color:#ad1457;margin-bottom:4px;">敏感肌主题</div>
-          <div class="video-meta">敏感肌全周期管理 · 科学护肤方案解析</div>
-          <div class="video-tag">敏感肌</div>
+        <div class="article-info">
+          <div class="article-title">年鉴内容精选 · Part 2</div>
+          <div class="article-meta" style="font-size:12px;font-weight:600;color:#ad1457;margin-bottom:4px;">敏感肌主题</div>
+          <div class="article-meta">敏感肌全周期管理 · 科学护肤方案解析</div>
+          <div class="article-tag">敏感肌</div>
         </div>
       </div>
     </div>
@@ -2937,6 +2970,20 @@ function spawnParticles(el) {
     document.body.appendChild(p);
     setTimeout(() => p.remove(), 1000);
   }
+}
+
+// ===================== ARTICLE =====================
+const articleData = [
+  { title: '年鉴内容精选 · Part 1 光电项目主题', emoji: '💡', desc: '聚焦光电项目术后皮肤屏障修护核心策略，涵盖激光、强脉冲光等主流光电治疗后的科学护肤方案，结合Cetaphil舒特肤临床数据，为皮肤科医生提供实操性推荐依据。', readTime: '5分钟阅读' },
+  { title: '年鉴内容精选 · Part 2 敏感肌主题', emoji: '🌸', desc: '系统梳理敏感肌的诊断标准与全周期管理方案，从诱因分析、屏障修护到长期维稳，结合真实病例与临床数据，为皮肤科医生构建科学的敏感肌护肤推荐体系。', readTime: '5分钟阅读' }
+];
+let currentArticleIdx = 0;
+
+function readArticle(cardEl, idx) {
+  currentArticleIdx = idx;
+  const a = articleData[currentArticleIdx];
+  showToast('📖 正在打开文章：' + a.title);
+  addScore(5);
 }
 
 // ===================== VIDEO =====================
